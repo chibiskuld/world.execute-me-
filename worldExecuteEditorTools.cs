@@ -6,7 +6,7 @@ using UnityEditor;
 using System.IO;
 using System.Linq;
 
-public class CreateTextureFromMesh : EditorWindow
+public class worldExecuteEditorTools : EditorWindow
 {
     public Mesh meshPrep;
     public Mesh meshStats;
@@ -22,7 +22,7 @@ public class CreateTextureFromMesh : EditorWindow
     [MenuItem("Window/World.Execute")]
     static void Init()
     {
-        CreateTextureFromMesh window = (CreateTextureFromMesh)EditorWindow.GetWindow(typeof(CreateTextureFromMesh));
+        worldExecuteEditorTools window = (worldExecuteEditorTools)EditorWindow.GetWindow(typeof(worldExecuteEditorTools));
         window.Show();
     }
 
