@@ -29,8 +29,12 @@ public class worldExecuteEditorTools : EditorWindow
     private void OnGUI()
     {
         EditorGUILayout.BeginVertical();
+        /********************************************************************************
+         * Prepare Mesh for Simulation:
+         * Use this to pack the triangle ID to the uv2 coordinates of the mesh for the
+         * simulation.
+        ********************************************************************************/
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
-
         meshPrep = (Mesh)EditorGUILayout.ObjectField(meshPrep, typeof(Mesh), false);
         if (GUILayout.Button("Prepare Mesh for Vertex Shader"))
         {
@@ -53,11 +57,21 @@ public class worldExecuteEditorTools : EditorWindow
             meshPrep.SetUVs(1, uvs2.ToList<Vector2>());
         }
 
+        /********************************************************************************
+         * Show Stats:
+         * Use this to get information about a mesh that will get packed into simulation
+         * textures.
+        ********************************************************************************/
         meshStats = (Mesh)EditorGUILayout.ObjectField(meshStats, typeof(Mesh), false);
         if (GUILayout.Button("Show Stats"))
         {
             Debug.Log("If I can be a texture containing " + meshStats.triangles.Length + " verticies as pixels named " + meshStats.name + ".exr");
         }
+        /********************************************************************************
+         * Populate List:
+         * Populate the list of meshes located in the folder Assets/world.execute/keyframes/
+         * that will be packed into the textures for our simulation.
+        ********************************************************************************/
         if (GUILayout.Button("Populate List"))
         {
             string path = "Assets/world.execute/keyframes/";
@@ -92,6 +106,7 @@ public class worldExecuteEditorTools : EditorWindow
             }
         }
 
+        //Display the mesh list.
         nOfMeshes = EditorGUILayout.IntField(nOfMeshes);
         if (meshes.Length != nOfMeshes || meshes == null)
         {
@@ -101,6 +116,15 @@ public class worldExecuteEditorTools : EditorWindow
         {
             meshes[i] = (Mesh)EditorGUILayout.ObjectField(i.ToString(),meshes[i], typeof(Mesh), false);
         }
+
+        /********************************************************************************
+         * Make Texture:
+         * Begin packing the meshes into two textures. One that contains the mesh verticies
+         * in triangle order. And the second containing offset and sizes of the 
+         * mesh. The offset and size have to be stored split into 2 numbers, as the 
+         * Quest only supports 16bit floats for HDR Textures. So we rebuild the number
+         * with-in the Simulation.
+        ********************************************************************************/
         if (GUILayout.Button("Make Texture"))
         {
             int tCount = 0;
@@ -208,57 +232,15 @@ public class worldExecuteEditorTools : EditorWindow
             File.WriteAllBytes(Application.dataPath + "/world.execute/indexData.exr", bytes);
         }
 
-        if (GUILayout.Button("Make Seperate Texture"))
-        {
-            int width = 512;
-            int height = 512;
-
-            foreach (Mesh mesh in meshes) {
-                if (mesh != null)
-                {
-                    Texture2D tex = new Texture2D(width, height, TextureFormat.RGBAFloat, false);
-
-                    //reset (clear) the texture first.
-                    for (int i = 0; i < 512; i++)
-                    {
-                        for (int j = 0; j < 512; j++)
-                        {
-                            tex.SetPixel(i, j, Vector4.zero);
-                        }
-                    }
-
-                    Debug.Log("If I can be a texture containing " + mesh.triangles.Length + " verticies as pixels named " + mesh.name + ".exr");
-
-                    for (int i = 0; i < mesh.triangles.Length; i++)
-                    {
-                        int x = i % 512;
-                        int y = i / 512;
-                        int t = mesh.triangles[i];
-
-                        Vector4 color = new Vector4(mesh.vertices[t].x, mesh.vertices[t].y, mesh.vertices[t].z, 1);
-                        tex.SetPixel(x, y, color);
-                        if (i % 100 == 0)
-                        {
-                            EditorUtility.DisplayProgressBar(
-                                "If I'm a progress bar",
-                                "Then I will give you the illusion of progress: " + i.ToString() + "/" + mesh.triangles.Length.ToString(),
-                                (float)i / (float)mesh.triangles.Length
-                            );
-                        }
-                    }
-                    EditorUtility.ClearProgressBar();
-                    tex.Apply();
-                    byte[] bytes = tex.EncodeToEXR(Texture2D.EXRFlags.None);
-                    Object.DestroyImmediate(tex);
-                    File.WriteAllBytes(Application.dataPath + "/world.execute/" + mesh.name + ".exr", bytes);
-                    Debug.Log("Then, I will give you my pixels for execution.");
-                }
-            } 
-        }
-
+        /********************************************************************************
+         * World.Execute(me):
+         * If you want to test the Simulation, before publishing, you can attach the
+         * required components here, press play, and then click "World.Execute(me);"
+         * to test the simulation before uploading.
+        ********************************************************************************/
         worldExecute = (Material)EditorGUILayout.ObjectField(worldExecute, typeof(Material), true);
         worldExecuteAudio = (AudioSource)EditorGUILayout.ObjectField(worldExecuteAudio, typeof(AudioSource), true);
-        if (GUILayout.Button("World.Execute(me)"))
+        if (GUILayout.Button("World.Execute(me);"))
         {
             if (!playing)
             {
