@@ -22,6 +22,10 @@ float4 getVertexFromTextureOrOriginal(uint meshIndex, float4 original, float rot
 		y = pos / 2048;
 		float4 vertex = _Meshes.Load(int3(x, y, 0));
 		vertex.xyz *= _Scale;
+		if (abs(vertex.x * vertex.y * vertex.z) > .00024f) {
+			original.w = 0;
+			return original;
+		}
 		vertex.w = 1;
 		if (rotate > 0) {
 			vertex.xy = rotate2(vertex.xy, -(_Time.y / 4) * rotate);
@@ -50,6 +54,10 @@ float4 getVertexFromTexture(uint meshIndex, float rotate = 0) {
 		y = pos / 2048;
 		float4 vertex = _Meshes.Load(int3(x, y, 0));
 		vertex.xyz *= _Scale;
+		if (abs(vertex.x * vertex.y * vertex.z) > .00024f) {
+			float4 output = float4(0, 0, 0, 0);
+			return output;
+		}
 		vertex.w = 1;
 		if (rotate > 0) {
 			vertex.xy = rotate2(vertex.xy, -(_Time.y / 4) * rotate);

@@ -30,6 +30,8 @@ float _CurrentTime;
 bool _Play;
 float timePosition;
 float _Scale;
+bool _Loop;
+uint _LoopTime;
 
 static const float bpm = 13.613568165555770700004787994211; // formula: 130bpm / 60secs * pi * 2
 

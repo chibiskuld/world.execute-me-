@@ -21,6 +21,9 @@ v2f vert(appdata v)
 	//adjust time before executing key frame.
 	if (_Play != 0) {
 		_CurrentTime = _Time.y - _StartTime;
+		if (_Loop) {
+			_CurrentTime = _CurrentTime % _LoopTime;
+		}
 	}
 
 	/******************************************************************************

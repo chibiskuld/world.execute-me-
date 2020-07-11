@@ -8,7 +8,9 @@
 		_EdgeWidth("Edge Width", float) = .1
 		_StartTime("Start Time", int) = 0
 		_CurrentTime("Force Current Time (For Debug)",int) = 0
-        [Toggle]_Play("Play animation", int) = 0
+		[Toggle]_Play("Play animation", int) = 0
+		[Toggle]_Loop("Loop animation", int) = 0
+		_LoopTime("Loop Time",int) = 0
 		_Scale("Scale of internal mesh",float) = 1
 		[Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("Source Blend", Float) = 1                 // "One"
 		[Enum(UnityEngine.Rendering.BlendMode)] _DstBlend("Destination Blend", Float) = 0            // "Zero"

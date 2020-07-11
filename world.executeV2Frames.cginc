@@ -36,8 +36,9 @@ void FrameInifinite() {
 	o.vertex.w = 0;
 	uint i = frame.vID % 3;
 
-	if (frame.triID < (uint)_CurrentTime * (uint)100) {
+	if ((float)frame.triID < (float)_CurrentTime * (float)100.0f) {
 		float s = 2.0f / ((float)frame.triID + 1.0f);
+		s = min(1.4f, s);
 		s /= 10.0f;
 		//s += .0001f;
 		float x = 0;
@@ -84,6 +85,7 @@ void FrameLimitation() {
 		float tid = frame.triID - (size / 3.0f);
 		if (tid < (t - _CurrentTime)*400.0f) {
 			float s = 2.0f / ((float)tid + 1.0f);
+			s = min(1.4f, s);
 			s /= 10.0f;
 			//s += .0001f;
 			float x = 0;
@@ -131,14 +133,11 @@ void IsolationFrame() {
 	float4 fVertex = getVertexFromTextureOrOriginal(_IsolationI, o.vertex);
 	if (fVertex.w > 0) {
 		float t = _EraseF - _IsolationF;
-		if (_CurrentTime < t) {
-			fVertex.y *= ( _CurrentTime / t );
-		}
-		else {
+		fVertex.y *= min(1, (_CurrentTime / t)) / _Scale;
+		if (_CurrentTime >= t) {
 			t = saturate( (_CurrentTime - t)/2 );
-			//TODO: needs to be fixed for quest.
-			//fVertex = lerp(fVertex, frame.onput[0].vertex, t);
 			fVertex = lerp(fVertex, frame.o.vertex, t);
+			fVertex.w = 1-t;
 		}
 	}
 	float l = saturate(_CurrentTime*4);
